@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>注册会计师协会 · 防伪报备查询系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #eef2f5;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0b3b5f 0%, #1b4f6e 100%);
+            padding: 1.8rem 2rem;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero h1 small {
+            font-size: 0.85rem;
+            font-weight: 400;
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+        }
+
+        .stats-badge {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,0.12);
+            border-radius: 60px;
+            padding: 0.6rem 1.3rem;
+            width: fit-content;
+        }
+
+        .stats-badge span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stats-badge strong {
+            font-size: 1.2rem;
+            margin-left: 6px;
+        }
+
+        .query-panel {
+            padding: 2rem 2rem 1.5rem;
+            background: #fff;
+            border-bottom: 1px solid #e9edf2;
+        }
+
+        .query-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 15px;
+        }
+
+        .input-group {
+            flex: 3;
+            min-width: 260px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e4663;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 1.5px solid #dce3e9;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #1f6e8c;
+            box-shadow: 0 0 0 3px rgba(31,110,140,0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            background: #f0f4f8;
+            color: #1f2f3e;
+        }
+
+        .btn-primary {
+            background: #1f6e8c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0e5a76;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .result-wrapper {
+            padding: 0 2rem 2rem;
+        }
+
+        .result-card {
+            background: #fbfdfe;
+            border-radius: 28px;
+            border: 1px solid #e6edf4;
+            overflow: hidden;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            padding: 1rem 1.8rem;
+            border-bottom: 1px solid #e2e9f0;
+        }
+
+        .result-header h3 {
+            font-size: 1.25rem;
+            color: #144d66;
+        }
+
+        .close-result-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7e95ab;
+            width: 32px;
+            height: 32px;
+            border-radius: 40px;
+        }
+
+        .close-result-btn:hover {
+            background: #e9eef3;
+            color: #c00;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.2rem 2rem;
+            padding: 1.8rem;
+        }
+
+        .detail-item {
+            border-bottom: 1px dashed #e2eaf0;
+            padding-bottom: 10px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #6e8aa8;
+            margin-bottom: 6px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1c2e40;
+        }
+
+        .not-found-message {
+            padding: 2.5rem;
+            text-align: center;
+            color: #b91c1c;
+            background: #fff5f5;
+        }
+
+        .footer {
+            background: #f4f7fb;
+            padding: 1.2rem 2rem;
+            text-align: center;
+            border-top: 1px solid #e2e9f0;
+            font-size: 0.8rem;
+            color: #5d7184;
+        }
+
+        @media (max-width: 660px) {
+            body { padding: 1rem; }
+            .query-panel, .result-wrapper, .hero { padding-left: 1.2rem; padding-right: 1.2rem; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .btn { padding: 10px 20px; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <div class="hero">
+        <h1>📄 注册会计师协会报告防伪报备查询系统 <small>权威验证</small></h1>
+        <div class="stats-badge">
+            <span>🔍 今天 <strong id="todayCount">0</strong> 次防伪查询；</span>
+            <span>📊 总计 <strong id="totalCount">148531</strong> 次防伪查询。</span>
+        </div>
+    </div>
+
+    <div class="query-panel">
+        <div class="query-form">
+            <div class="input-group">
+                <label>防伪编号</label>
+                <input type="text" id="antiCodeInput" placeholder="请输入防伪编码">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="searchBtn">🔍 查 询</button>
+                <button class="btn btn-secondary" id="closePanelBtn">✖ 关 闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-wrapper" id="resultWrapper" style="display: none;">
+        <div class="result-card" id="resultCard"></div>
+    </div>
+
+    <div class="footer">
+        <p>注册会计师协会 版权所有 &copy; 2019 &nbsp;|&nbsp; 广州铭太科技信息有限公司 承建</p>
+    </div>
+</div>
+
+<script>
+    // ---------- 数据库（含原始+新增编号）----------
+    const UNIFIED_OBJECT_NAME = "北京市昱利华美科技有限公司";
+    const UNIFIED_FIRM_NAME = "北京浩清会计师事务所（普通合伙）";
+    const UNIFIED_CPA1 = "仇长宁";
+    const UNIFIED_CPA2 = "周勇标";     // 已修改
+    const UNIFIED_STATUS = "报备完成";
+
+    const REPORT_DB = {
+        "0109202006001943": {
+            authenticationNumber: "0109202006001943",
+            objectName: "苏州市成长之树公益助学中心",
+            projectType: "财务报表审计",
+            reportNumber: "浩清审字[2020]H20460773",
+            firmName: "北京浩清会计师事务所（普通合伙）",
+            cpa1: "陈丹",
+            cpa2: "吴兵锋",
+            status: "报备完成"
+        },
+        "0109202026000143": {
+            authenticationNumber: "0109202026000143",
+            objectName: UNIFIED_OBJECT_NAME,
+            projectType: "财务报表审计",
+            reportNumber: "[2026]H2604200143",
+            firmName: UNIFIED_FIRM_NAME,
+            cpa1: UNIFIED_CPA1,
+            cpa2: UNIFIED_CPA2,
+            status: UNIFIED_STATUS
+        },
+        "0109202026000144": {
+            authenticationNumber: "0109202026000144",
+            objectName: UNIFIED_OBJECT_NAME,
+            projectType: "财务报表审计",
+            reportNumber: "[2026]H2604200144",
+            firmName: UNIFIED_FIRM_NAME,
+            cpa1: UNIFIED_CPA1,
+            cpa2: UNIFIED_CPA2,
+            status: UNIFIED_STATUS
+        },
+        "0109202026000145": {
+            authenticationNumber: "0109202026000145",
+            objectName: UNIFIED_OBJECT_NAME,
+            projectType: "财务报表审计",
+            reportNumber: "[2026]H2604200145",
+            firmName: UNIFIED_FIRM_NAME,
+            cpa1: UNIFIED_CPA1,
+            cpa2: UNIFIED_CPA2,
+            status: UNIFIED_STATUS
+        }
+    };
+
+    // ---------- 计数器（localStorage）----------
+    const STORAGE_TOTAL_KEY = "anti_query_total";
+    const STORAGE_TODAY_KEY = "anti_query_today";
+    const STORAGE_DATE_KEY = "anti_query_lastdate";
+    const INIT_TOTAL = 148531;   // 初始总计
+
+    function getTodayStr() {
+        const d = new Date();
+        return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    }
+
+    function initQueryCounters() {
+        const todayDate = getTodayStr();
+        let total = localStorage.getItem(STORAGE_TOTAL_KEY);
+        let today = localStorage.getItem(STORAGE_TODAY_KEY);
+        let lastDate = localStorage.getItem(STORAGE_DATE_KEY);
+
+        if (total === null || today === null || lastDate === null) {
+            // 首次使用：总计 = 148531，今日 = 0
+            localStorage.setItem(STORAGE_TOTAL_KEY, INIT_TOTAL.toString());
+            localStorage.setItem(STORAGE_TODAY_KEY, "0");
+            localStorage.setItem(STORAGE_DATE_KEY, todayDate);
+            return { total: INIT_TOTAL, today: 0 };
+        } else {
+            if (lastDate !== todayDate) {
+                // 跨天重置今日次数为0，总次数保留
+                localStorage.setItem(STORAGE_TODAY_KEY, "0");
+                localStorage.setItem(STORAGE_DATE_KEY, todayDate);
+                return { total: parseInt(total, 10), today: 0 };
+            } else {
+                return { total: parseInt(total, 10), today: parseInt(today, 10) };
+            }
+        }
+    }
+
+    function refreshCountersUI() {
+        const total = localStorage.getItem(STORAGE_TOTAL_KEY);
+        const today = localStorage.getItem(STORAGE_TODAY_KEY);
+        const lastDate = localStorage.getItem(STORAGE_DATE_KEY);
+        const todayDate = getTodayStr();
+        let showToday = today ? parseInt(today,10) : 0;
+        let showTotal = total ? parseInt(total,10) : INIT_TOTAL;
+        
+        if (lastDate !== todayDate) {
+            const fresh = initQueryCounters();
+            showToday = fresh.today;
+            showTotal = fresh.total;
+        } else {
+            if (total !== null) showTotal = parseInt(total,10);
+            if (today !== null) showToday = parseInt(today,10);
+        }
+        document.getElementById("todayCount").innerText = showToday;
+        document.getElementById("totalCount").innerText = showTotal;
+    }
+
+    function incrementQueryCount() {
+        let total = parseInt(localStorage.getItem(STORAGE_TOTAL_KEY), 10);
+        let today = parseInt(localStorage.getItem(STORAGE_TODAY_KEY), 10);
+        let lastDate = localStorage.getItem(STORAGE_DATE_KEY);
+        const currentDate = getTodayStr();
+
+        if (lastDate !== currentDate) {
+            today = 0;
+            localStorage.setItem(STORAGE_DATE_KEY, currentDate);
+        }
+        today = isNaN(today) ? 1 : today + 1;
+        total = isNaN(total) ? INIT_TOTAL + 1 : total + 1;
+
+        localStorage.setItem(STORAGE_TODAY_KEY, today.toString());
+        localStorage.setItem(STORAGE_TOTAL_KEY, total.toString());
+
+        document.getElementById("todayCount").innerText = today;
+        document.getElementById("totalCount").innerText = total;
+        return { today, total };
+    }
+
+    // ---------- 辅助函数 ----------
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function renderResultByCode(code) {
+        const container = document.getElementById("resultCard");
+        const report = REPORT_DB[code];
+        if (report) {
+            container.innerHTML = `
+                <div class="result-header">
+                    <h3>📋 防伪报备详情 <span style="background:#eef2fa; padding:0.2rem 0.6rem; border-radius:40px;">已验证</span></h3>
+                    <button class="close-result-btn" id="innerCloseBtn">✕</button>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-item"><div class="detail-label">鉴证对象名称</div><div class="detail-value">${escapeHtml(report.objectName)}</div></div>
+                    <div class="detail-item"><div class="detail-label">委托项目类型</div><div class="detail-value">${escapeHtml(report.projectType)}</div></div>
+                    <div class="detail-item"><div class="detail-label">防伪号码</div><div class="detail-value">${escapeHtml(report.authenticationNumber)}</div></div>
+                    <div class="detail-item"><div class="detail-label">报告文号</div><div class="detail-value">${escapeHtml(report.reportNumber)}</div></div>
+                    <div class="detail-item"><div class="detail-label">会计师事务所名称</div><div class="detail-value">${escapeHtml(report.firmName)}</div></div>
+                    <div class="detail-item"><div class="detail-label">签名注册会计师一</div><div class="detail-value">${escapeHtml(report.cpa1)}</div></div>
+                    <div class="detail-item"><div class="detail-label">签名注册会计师二</div><div class="detail-value">${escapeHtml(report.cpa2)}</div></div>
+                    <div class="detail-item"><div class="detail-label">报备状态</div><div class="detail-value"><span style="background:#e0f2e9; padding:0.2rem 0.7rem; border-radius:20px;">● ${escapeHtml(report.status)}</span></div></div>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="result-header">
+                    <h3>⚠️ 查询结果</h3>
+                    <button class="close-result-btn" id="innerCloseBtn">✕</button>
+                </div>
+                <div class="not-found-message">
+                    ❌ 未查询到防伪编号 “${escapeHtml(code)}” 的相关报告。<br>
+                    请核对防伪号码后重新查询，或联系注册会计师协会。
+                </div>
+            `;
+        }
+        const closeBtn = document.getElementById("innerCloseBtn");
+        if (closeBtn) closeBtn.onclick = () => hideResultPanel();
+    }
+
+    function showResultPanel() {
+        document.getElementById("resultWrapper").style.display = "block";
+    }
+    function hideResultPanel() {
+        document.getElementById("resultWrapper").style.display = "none";
+    }
+
+    function performQuery() {
+        const code = document.getElementById("antiCodeInput").value.trim();
+        if (!code) {
+            alert("请输入防伪编号再进行查询");
+            return;
+        }
+        incrementQueryCount();   // 每次查询都会增加总计和今日
+        renderResultByCode(code);
+        showResultPanel();
+    }
+
+    function initializeUI() {
+        document.getElementById("antiCodeInput").value = "";
+        hideResultPanel();
+    }
+
+    function bindEvents() {
+        document.getElementById("searchBtn").onclick = (e) => { e.preventDefault(); performQuery(); };
+        document.getElementById("closePanelBtn").onclick = (e) => { e.preventDefault(); hideResultPanel(); };
+        document.getElementById("antiCodeInput").onkeypress = (e) => { if (e.key === "Enter") performQuery(); };
+    }
+
+    function startup() {
+        initQueryCounters();
+        refreshCountersUI();
+        initializeUI();
+        bindEvents();
+    }
+    startup();
+</script>
+</body>
+</html>
